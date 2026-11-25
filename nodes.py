@@ -130,6 +130,8 @@ class OVBPromptBuilder:
             "mode": ("STRING", {"default": "auto"}),
             "prompt": ("STRING", {"default": "", "multiline": True}),
             "source_missing": ("BOOLEAN", {"default": True, "forceInput": True}),
+        }, "optional": {
+            "alt_missing": ("BOOLEAN", {"default": True, "forceInput": True}),
         }}
 
     RETURN_TYPES = ("STRING", "BOOLEAN", "STRING", "BOOLEAN")
@@ -137,8 +139,9 @@ class OVBPromptBuilder:
     FUNCTION = "run"
     CATEGORY = "OpenVisionBanana"
 
-    def run(self, mode, prompt, source_missing):
-        p, task, skip, lock = build_prompt(mode, prompt, bool(source_missing))
+    def run(self, mode, prompt, source_missing, alt_missing=True):
+        # a source exists if EITHER the init image or the alternative (/image1) arrived
+        p, task, skip, lock = build_prompt(mode, prompt, bool(source_missing) and bool(alt_missing))
         print(f"[OVB] mode={task} skip_source={skip} lock_size={lock}\n[OVB] prompt: {p[:300]}")
         return (p, skip, task, lock)
 
